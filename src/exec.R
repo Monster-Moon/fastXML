@@ -1,6 +1,7 @@
+##############################
+############ exec ############
+##############################
 
-
-setwd('D:\\Project\\git\\fastXML\\src')
 source('xml_function.R')
 
 #### data generate ####
@@ -16,4 +17,7 @@ y_data = matrix(rbinom(n * output_dim, size = 1, prob = as.numeric(y_prop)), nco
 
 ## result
 tree_list = fastXML_func(x = x_data, y = y_data, K = 2)
+tree_list$tree_list
+tree_list$predict_list
+
 

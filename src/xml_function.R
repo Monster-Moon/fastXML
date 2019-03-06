@@ -12,12 +12,31 @@ require(dplyr)
 fastXML_func = function(x, y, K, MaxLeaf = 10L)
 {
   tree_list = vector('list', K)
+  predict_list = vector('list', K)
   n_id = 1:nrow(x_data)
   for(k in 1:K)
   {
     tree_list[[k]] = grow_node_recursive_func(x = x, y = y, data_inx = n_id, MaxLeaf = MaxLeaf)
+    predict_list[[k]] = fastXML_predict(tree_list[[k]], x)
   }
-  return(tree_list)
+  return(list(tree_list = tree_list, predict_list = predict_list))
+}
+
+fastXML_predict = function(tree, x)
+{
+  pp = apply(x, 1, fastXML_predict_each, tree = tree) %>% t()
+  return(pp)
+}
+
+
+fastXML_predict_each = function(tree, x_vec)
+{
+  while(length(tree) != 1)
+  {
+    tree_inx = ifelse(x_vec %*% tree$w >= 0, 2, 3) %>% as.numeric()
+    tree = tree[[tree_inx]]
+  }
+  return(tree$P)
 }
 
 grow_node_recursive_func = function(x, y, data_inx, MaxLeaf = 10L) ## Return tree
@@ -39,8 +58,8 @@ grow_node_recursive_func = function(x, y, data_inx, MaxLeaf = 10L) ## Return tre
     return(list(P = P))
   }else{
     return(list(w = w,
-                n_left_tree = n_left_tree, 
-                n_right_tree = n_right_tree))
+                l_tree = n_left_tree, 
+                r_tree = n_right_tree))
   }
 }
 
