@@ -8,7 +8,7 @@ gc(reset = T)
 if(!require(dplyr)) install.packages("dplyr")
 require(dplyr)
 
-#### code
+#### execution code
 fastXML_func = function(x, y, K, MaxLeaf = 10L)
 {
   tree_list = vector('list', K)
@@ -22,23 +22,7 @@ fastXML_func = function(x, y, K, MaxLeaf = 10L)
   return(list(tree_list = tree_list, predict_list = predict_list))
 }
 
-fastXML_predict = function(tree, x)
-{
-  pp = apply(x, 1, fastXML_predict_each, tree = tree) %>% t()
-  return(pp)
-}
-
-
-fastXML_predict_each = function(tree, x_vec)
-{
-  while(length(tree) != 1)
-  {
-    tree_inx = ifelse(x_vec %*% tree$w >= 0, 2, 3) %>% as.numeric()
-    tree = tree[[tree_inx]]
-  }
-  return(tree$P)
-}
-
+#### buile tree ftns
 grow_node_recursive_func = function(x, y, data_inx, MaxLeaf = 10L) ## Return tree
 {
   if(length(data_inx) <= MaxLeaf)
@@ -117,5 +101,22 @@ objective_w_func = function(w, x, delta_inx)
 process_leaf_func = function(y, data_inx)
 {
   return(colMeans(y[data_inx, , drop = F]))
+}
+
+#### prediction ftns
+fastXML_predict = function(tree, x)
+{
+  pp = apply(x, 1, fastXML_predict_each, tree = tree) %>% t()
+  return(pp)
+}
+
+fastXML_predict_each = function(tree, x_vec)
+{
+  while(length(tree) != 1)
+  {
+    tree_inx = ifelse(x_vec %*% tree$w >= 0, 2, 3) %>% as.numeric()
+    tree = tree[[tree_inx]]
+  }
+  return(tree$P)
 }
 
