@@ -32,11 +32,16 @@ grow_node_recursive_func = function(x, y, data_inx, MaxLeaf = 10L) ## Return tre
   }else
   {
     split_node_result = split_node_func(x, y, data_inx)
-    w = split_node_result$w
-    n_left_tree = grow_node_recursive_func(x, y, split_node_result$n_left_child, MaxLeaf = MaxLeaf)
-    n_right_tree = grow_node_recursive_func(x, y, split_node_result$n_right_child, MaxLeaf = MaxLeaf)
+    if(split_node_result$node_bug)
+    {
+      P = process_leaf_func(y, data_inx = split_node_result[[names(which(lapply(split_node_result[2:3], length) != 0))]])
+      w = NULL
+    }else{
+      w = split_node_result$w
+      n_left_tree = grow_node_recursive_func(x, y, split_node_result$n_left_child, MaxLeaf = MaxLeaf)
+      n_right_tree = grow_node_recursive_func(x, y, split_node_result$n_right_child, MaxLeaf = MaxLeaf)
+    }
   }
-  
   if(is.null(w))
   {
     return(list(P = P))
@@ -52,7 +57,7 @@ IL_y_func = function(s)
   return(1/sum(1/log(1 + 1:s)))
 }
 
-split_node_func = function(x, y, data_inx, max_iter = 100L)
+split_node_func = function(x, y, data_inx, max_iter = 1000L)
 {
   set.seed(1)
   delta_next_inx = delta_inx = sample(c(-1, 1), size = length(data_inx), replace = T)
@@ -89,8 +94,8 @@ split_node_func = function(x, y, data_inx, max_iter = 100L)
   decision_boundary = x_id %*% w_next
   n_right_child = data_inx[which(decision_boundary > 0)]
   n_left_child = data_inx[which(decision_boundary <= 0)]
-  
-  return(list(w = w_next, n_left_child = n_left_child, n_right_child = n_right_child))
+  node_bug = ifelse(any(length(n_left_child) == 0, length(n_right_child) == 0), T, F)
+  return(list(w = w_next, n_left_child = n_left_child, n_right_child = n_right_child, node_bug = node_bug))
 }
 
 objective_w_func = function(w, x, delta_inx)

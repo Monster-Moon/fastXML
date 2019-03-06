@@ -16,7 +16,7 @@ y_prop =  exp(x_data %*% beta_star)/(1 + exp(x_data %*% beta_star))
 y_data = matrix(rbinom(n * output_dim, size = 1, prob = as.numeric(y_prop)), ncol = output_dim)
 
 ## result
-tree_list = fastXML_func(x = x_data, y = y_data, K = 2)
+tree_list = fastXML_func(x = x_data, y = y_data, K = 1, MaxLeaf = 5L)
 tree_list$tree_list
 tree_list$predict_list
 
