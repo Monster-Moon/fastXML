@@ -17,9 +17,13 @@ fastXML_func = function(x, y, K, MaxLeaf = 10L)
   for(k in 1:K)
   {
     tree_list[[k]] = grow_node_recursive_func(x = x, y = y, data_inx = n_id, MaxLeaf = MaxLeaf)
-    predict_list[[k]] = fastXML_predict(tree_list[[k]], x)
   }
-  return(list(tree_list = tree_list, predict_list = predict_list))
+  return(tree_list)
+}
+
+fastXML_predict = function(tree_list, x)
+{
+  return(lapply(tree_list, fastXML_predict_list, x = x))
 }
 
 #### buile tree ftns
@@ -109,7 +113,7 @@ process_leaf_func = function(y, data_inx)
 }
 
 #### prediction ftns
-fastXML_predict = function(tree, x)
+fastXML_predict_list = function(tree, x)
 {
   pp = apply(x, 1, fastXML_predict_each, tree = tree) %>% t()
   return(pp)
