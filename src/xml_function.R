@@ -102,6 +102,33 @@ split_node_func = function(x, y, data_inx, max_iter = 1000L)
   return(list(w = w_next, n_left_child = n_left_child, n_right_child = n_right_child, node_bug = node_bug))
 }
 
+objective_w_func = function(w, x, delta_inx)
+{
+  return(sum(abs(w))  + colSums(log(1 + exp(-delta_inx * x %*% w))))
+}
+
+process_leaf_func = function(y, data_inx)
+{
+  return(colMeans(y[data_inx, , drop = F]))
+}
+
+#### prediction ftns
+fastXML_predict_list = function(tree, x)
+{
+  pp = apply(x, 1, fastXML_predict_each, tree = tree) %>% t()
+  return(pp)
+}
+
+fastXML_predict_each = function(tree, x_vec)
+{
+  while(length(tree) != 1)
+  {
+    tree_inx = ifelse(x_vec %*% tree$w >= 0, 2, 3) %>% as.numeric()
+    tree = tree[[tree_inx]]
+  }
+  return(tree$P)
+}
+
 ## new idea (K-means split node)
 # split_node_func = function(x, y, data_inx, max_iter = 1000L)
 # {
@@ -133,31 +160,3 @@ split_node_func = function(x, y, data_inx, max_iter = 1000L)
 #   node_bug = ifelse(any(length(n_left_child) == 0, length(n_right_child) == 0), T, F)
 #   return(list(w = w_init, n_left_child = n_left_child, n_right_child = n_right_child, node_bug = node_bug))
 # }
-
-objective_w_func = function(w, x, delta_inx)
-{
-  return(sum(abs(w))  + colSums(log(1 + exp(-delta_inx * x %*% w))))
-}
-
-process_leaf_func = function(y, data_inx)
-{
-  return(colMeans(y[data_inx, , drop = F]))
-}
-
-#### prediction ftns
-fastXML_predict_list = function(tree, x)
-{
-  pp = apply(x, 1, fastXML_predict_each, tree = tree) %>% t()
-  return(pp)
-}
-
-fastXML_predict_each = function(tree, x_vec)
-{
-  while(length(tree) != 1)
-  {
-    tree_inx = ifelse(x_vec %*% tree$w >= 0, 2, 3) %>% as.numeric()
-    tree = tree[[tree_inx]]
-  }
-  return(tree$P)
-}
-
