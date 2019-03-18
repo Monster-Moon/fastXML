@@ -28,4 +28,3 @@ predict_list = fastXML_predict(tree_list = tree_list, x = x_data)
 predict_test_list = fastXML_predict(tree_list = tree_list, x = x_test_data)
 
 
-

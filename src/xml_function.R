@@ -102,6 +102,38 @@ split_node_func = function(x, y, data_inx, max_iter = 1000L)
   return(list(w = w_next, n_left_child = n_left_child, n_right_child = n_right_child, node_bug = node_bug))
 }
 
+## new idea (K-means split node)
+# split_node_func = function(x, y, data_inx, max_iter = 1000L)
+# {
+#   set.seed(1)
+#   d = ncol(x)
+#   L = ncol(y)
+#   
+#   x_id = x_data[data_inx, ]
+#   y_id = y_data[data_inx, ]
+#   
+#   w_init = rep(0, d)
+#   break_stack = 0
+#   delta_inx = F
+#   for(i in 1:max_iter)
+#   {
+#     kmeans_clusters = kmeans(y[data_inx, ], centers = 2)
+#     delta_next_inx = kmeans_clusters$cluster
+#     w_init = optim(w_init, objective_w_func, x = x_id, delta_inx = delta_inx)$par # w update
+#     if(all(delta_inx == delta_next_inx))
+#     {
+#       break_stack = break_stack + 1
+#       if(break_stack >= 3) break
+#     }
+#     delta_inx = delta_next_inx
+#   }
+#   decision_boundary = x_id %*% w_init
+#   n_right_child = data_inx[which(decision_boundary > 0)]
+#   n_left_child = data_inx[which(decision_boundary <= 0)]
+#   node_bug = ifelse(any(length(n_left_child) == 0, length(n_right_child) == 0), T, F)
+#   return(list(w = w_init, n_left_child = n_left_child, n_right_child = n_right_child, node_bug = node_bug))
+# }
+
 objective_w_func = function(w, x, delta_inx)
 {
   return(sum(abs(w))  + colSums(log(1 + exp(-delta_inx * x %*% w))))
